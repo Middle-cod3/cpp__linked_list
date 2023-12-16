@@ -1,0 +1,4 @@
+3 -> 1 -> 2 -> 4 -> 1 -> NULL
+Tail connects at pos 2
+Time taken by function: 68 microseconds
+Space used by function: 0 bytes

@@ -1,0 +1,21 @@
+int a =23; and its address is like "0x16f0caf18"
+you  can't store in a int datatype like this int b=&a; (This will got an error)
+So for this you have to use POINTERS datatype. 
+There are many diff pointers like int pointers or int *variable_name; this will save out int a variables address.
+And you can not define pointers as a int you will get an error like
+int a=23;
+int *ad=&a;
+ad=1000; this will got an error.
+Now if you want to save this *ad pointers value to another pointer so simply you can do this using
+int **add=&ad;
+Now if you want to see what is the value that pointer holding you can see using 
+cout<<*ad;
+Exm:
+int a = 23;
+int *ad=&a;
+cout<<ad<<endl;
+cout<<*ad<<endl;
+int **add=&ad;
+cout<<add<<endl;
+cout<<*add<<endl;
+cout<<**add;
