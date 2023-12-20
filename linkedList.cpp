@@ -1358,8 +1358,15 @@ Node *removeKthNodeBruteforce(Node *head, int K)
 // TC :
 // SC :
 // Optimal -----Fast ptr move to K-th pos then fast++,slow++ when fast=NULL?remove slow->next;----->
+// Approaches-->>
+// Initialize Two Pointers: Use two pointers, fast and slow, both initially pointing to a dummy node (start). The fast pointer is advanced by K nodes means move fast pointer single from 1->K nodes like fast=fast->next.
+// The calculation is if linked list length is 5 and K=2. If fast pointer advance move 2 step then remain 3 step for complete the liked list length.Now after advance move if you move fast pointer 3 steps then slow pointer also move 3 step that is removeNode’s prev node.
+// Move Pointers to Find Kth Node from End: Move both fast and slow pointers simultaneously until fast reaches the end of the linked list. At this point, slow will be pointing to the node preceding the Kth node from the end.
+// Remove Kth Node: Update the next pointer of the node pointed to by slow to skip the Kth node.
+// Return the Modified List: Return the next pointer of the dummy node (start), which represents the head of the modified list.
 // TC :O(n)
 // SC :O(1)
+
 Node *removeKthNodeOptimal(Node *head, int K)
 {
     Node *start = new Node();
@@ -2261,30 +2268,89 @@ Node *copyRandomListOptimal(Node *head)
     {
         fast = itr->next->next;
         temp->next = itr->next;
-        itr->next=fast;
+        itr->next = fast;
         temp = temp->next;
         itr = fast;
     }
     return dummy->next;
 }
 
+// Extra from leetcode
+
 /*
-33.
+21. Merge two sorted lists
 ANS :
 Input :    || Output :
 */
 // Bruteforce ----------->
-// TC :
-// SC :
+// TC : O(N+M)
+// SC : O(N+M)
+Node *mergeTwoListsBruteforce(Node *list1, Node *list2)
+{
+    if (list1 == NULL)
+        return list2;
+    if (list2 == NULL)
+        return list1;
+    Node *left = list1;
+    Node *right = list2;
+    Node *dummy = new Node(0);
+    Node *curr = dummy;
+    while (left && right)
+    {
+        if (left->data <= right->data)
+        {
+            curr->next = left;
+            left = left->next;
+        }
+        else
+        {
+            curr->next = right;
+            right = right->next;
+        }
+        curr = curr->next;
+    }
+    while (left)
+    {
+        curr->next = left;
+        curr = curr->next;
+        left = left->next;
+    }
+    while (right)
+    {
+        curr->next = right;
+        curr = curr->next;
+        right = right->next;
+    }
+    return dummy->next;
+}
 // Better ----------->
 // TC :
 // SC :
 // Optimal ---------->
-// TC :
-// SC :
-
-
-
+// TC :O(N+M)
+// SC :O(1)
+Node *mergeTwoListsOptimal(Node *list1, Node *list2)
+{
+    if (list1 == NULL)
+        return list2;
+    if (list2 == NULL)
+        return list1;
+    if (list1->data > list2->data)
+        swap(list1, list2);
+    Node *res = list1;
+    while (list1 != NULL && list2 != NULL)
+    {
+        Node *temp = NULL;
+        while (list1 != NULL && list1->data <= list2->data)
+        {
+            temp = list1;
+            list1 = list1->next;
+        }
+        temp->next = list2;
+        swap(list1, list2);
+    }
+    return res;
+}
 
 // ================================MAIN START=================================>>
 int main()
@@ -2435,20 +2501,20 @@ int main()
     // cout<<"After Insert "<<endl;
     // printLinkedList(head,1);
     // add 2 numbers
-    // Node *head1 = NULL;
+    Node *head1 = NULL;
     // head1 = insertAtTailDLL(head1, 10);
-    // head1 = insertAtTailDLL(head1, 3);
+    head1 = insertAtTailDLL(head1, 3);
     // head1 = insertAtTailDLL(head1, 10);
     // head1 = insertAtTailDLL(head1, 8);
-    // head1 = insertAtTailDLL(head1, 5);
-    // head1 = insertAtTailDLL(head1, 10);
+    head1 = insertAtTailDLL(head1, 5);
+    head1 = insertAtTailDLL(head1, 10);
     // // cout<<"Head1"<<endl;
     // printLinkedList(head1, 2);
     // cout << endl;
     // cout<<"Head2"<<endl;
-    // Node *head2 = NULL;
-    // head2 = insertAtTailDLL(head2, 4);
-    // head2 = insertAtTailDLL(head2, 8);
+    Node *head2 = NULL;
+    head2 = insertAtTailDLL(head2, 4);
+    head2 = insertAtTailDLL(head2, 8);
     // cout << "After add 1" << endl;
     // head = add1ToLinkedListBruteforce(head);
     // head = add1ToLinkedListOptimal(head);
@@ -2456,10 +2522,15 @@ int main()
     // Node*new_head=addTwoNumbersOptimal(head1,head2);
     // cout<<endl<<"After addition"<<endl;
     // printLinkedList(new_head,1);
-
+    // cout<<longestPalindrome("abba");
     // cout << "After delete all occu that have 10" << endl;
     // head1 = deleteAllOccurrencesOptimal(head1, 10);
     // printLinkedList(head1, 2);
+    // Extra from leetcode---------->>
+    // Node *head = mergeTwoListsBruteforce(head1, head2);
+    Node *head = mergeTwoListsOptimal(head1, head2);
+
+    printLinkedList(head, 1);
 
     // End code here-------->>
     /*Calculating time and space start----->>*/
