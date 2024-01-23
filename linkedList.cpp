@@ -1452,8 +1452,28 @@ ANS : Given the head of a linked list, return the list after sorting it in ascen
 Input :  head = [4,2,1,3]  || Output : [1,2,3,4]
 */
 // Bruteforce ----------->
-// TC :
-// SC :
+// TC :O(N)+O(NlogN)+O(N)
+// SC :O(N)
+Node *sortListBruteforce(Node *head)
+{
+    vector<int> arr;
+    Node *temp = head;
+    while (temp)
+    {
+        arr.push_back(temp->data);
+        temp = temp->next;
+    }
+    sort(arr.begin(), arr.end());
+    int i = 0;
+    temp = head;
+    while (temp != NULL)
+    {
+        temp->data = arr[i];
+        i += 1;
+        temp = temp->next;
+    }
+    return head;
+}
 // Better ----------->
 // TC :
 // SC :
@@ -1923,6 +1943,7 @@ vector<pair<int, int>> findPairsBruteforce(Node *head, int k)
         }
         temp1 = temp1->next;
     }
+    return ans;
 }
 // Better ----------->
 // TC :
@@ -2114,14 +2135,47 @@ Note: The flattened list will be printed using the bottom pointer instead of the
 Input :  linked list = [5,7,8,30,10,20,19,22,50,28,35,40,45]  || Output :Flattened list = [5,7,8,10,19,20,22,28,30,35,40,45,50]
 */
 // Bruteforce ----------->
-// TC :
-// SC :
+// TC : Assume LL size is N and child is M then first while loop O(NxM), for sort O(XlogX) where X=N*M, and convert take all elem so its O(NxM) overall= O(NxM)*2+O(XlogX)
+// SC :O(NxM)*2 , 2 cz first time for caring a arr then in convert creating  a new verticle LL
+Node *convertArrToVrtLL(vector<int> &arr)
+{
+    if (arr.size() == 0)
+        return NULL;
+    Node *head = new Node(arr[0]);
+    Node *temp = head;
+    for (int i = 1; i < arr.size(); i++)
+    {
+        Node *newNode = new Node(arr[i]);
+        temp->child = newNode;
+        temp = temp->child;
+    }
+    return head;
+}
+Node *flattenLinkedListBruteforce(Node *head)
+{
+    vector<int> arr;
+    Node *temp = head;
+    while (temp != NULL)
+    {
+        Node *t2 = temp;
+        while (t2 != NULL)
+        {
+            arr.push_back(t2->data);
+            t2 = t2->child;
+        }
+        temp = temp->next;
+    }
+    sort(arr.begin(), arr.end());
+    Node *ans = convertArrToVrtLL(arr);
+    return ans;
+}
+
 // Better ----------->
 // TC :
 // SC :
 // Optimal ---------->
-// TC :  O(N), where N is the total number of nodes present
-// SC :
+// TC :  O(n)xO(2m)
+// SC : O(n) its in memory which recursion uses or you can say O(1)
 //
 Node *merge(Node *first, Node *second)
 {
@@ -2202,7 +2256,7 @@ Input :  head = [[1,3],[2,0],[3,null],[4,1]]  || Output :head = [[1,3],[2,0],[3,
 // Bruteforce ----------->
 // TC : O(N)+O(N)
 // Reason: Two iterations over the entire list. Once for inserting in the map and other for linking nodes with next and random pointer.
-// SC :O(N)
+// SC :O(N) +O(N) for return the ans
 
 Node *copyRandomListBruteforce(Node *head)
 {
@@ -2273,59 +2327,226 @@ Node *copyRandomListOptimal(Node *head)
         itr = fast;
     }
     return dummy->next;
+    //You can breakdown 3 steps into
+    // insertCopyInBetween(head);
+    // connectRandomPointers(head);
+    // return getDeepCopyList(head);
 }
 
-// Extra from leetcode
-
 /*
-21. Merge two sorted lists
+33. Merge K sorted lists
 ANS :
-Input :    || Output :
+Input : lists = [[1,4,5],[1,3,4],[2,6]]  || Output : 1->1->2->3->4->4->5->6
 */
 // Bruteforce ----------->
-// TC : O(N+M)
-// SC : O(N+M)
-Node *mergeTwoListsBruteforce(Node *list1, Node *list2)
+// TC : O(nxk)+O(mlogm)+O(nxk) where m=NxK
+// SC: O(m) + O(m)
+Node *mergeKListsBruteforce(vector<Node *> &lists)
 {
-    if (list1 == NULL)
-        return list2;
-    if (list2 == NULL)
-        return list1;
-    Node *left = list1;
-    Node *right = list2;
+    int n = lists.size();
+    vector<int> arr;
+    for (int i = 0; i < n; i++)
+    {
+        Node *temp = lists[i];
+        while (temp)
+        {
+            arr.push_back(temp->data);
+            temp = temp->next;
+        }
+    }
+    sort(arr.begin(), arr.end());
+    Node *head = constructLLOptimal(arr);
+    return head;
+}
+// Better ----------->
+// TC : Assume n1=head and n2=lists[i]
+// first iteration (n1+n2)
+// second " (n1+n2+n3)
+// third " (n1+n2+n3+n4)
+// Now assume that every list is same size
+// N(1+2+3....K)
+// so its near about N*((k*k+1)/2)
+// SC : O(1)
+Node *mergeKListsBetter(vector<Node *> &lists)
+{
+    Node *head = lists[0];
+    for (int i = 1; i < lists.size(); i++)
+    {
+        head = mergelist(head, lists[i]);
+    }
+    return head;
+}
+// Optimal ---------->
+// TC : O(klogk) its for for loop +O(NxKxlogK) assume that all list;s size is same
+// SC :  O(k) at max it can store k elems
+Node *mergeKListsOptimal(vector<Node *> &lists)
+{
+    priority_queue<pair<int, Node *>, vector<pair<int, Node *>>, greater<pair<int, Node *>>> minH;
+    int n = lists.size();
+    for (int i = 0; i < n; i++)
+    {
+        // We're pushing pq list's head list itself
+        if (lists[i])
+            minH.push({lists[i]->data, lists[i]});
+    }
     Node *dummy = new Node(0);
-    Node *curr = dummy;
-    while (left && right)
+    Node *temp = dummy;
+    while (!minH.empty())
     {
-        if (left->data <= right->data)
-        {
-            curr->next = left;
-            left = left->next;
-        }
-        else
-        {
-            curr->next = right;
-            right = right->next;
-        }
-        curr = curr->next;
-    }
-    while (left)
-    {
-        curr->next = left;
-        curr = curr->next;
-        left = left->next;
-    }
-    while (right)
-    {
-        curr->next = right;
-        curr = curr->next;
-        right = right->next;
+        pair<int, Node *> p = minH.top();
+        temp->next = p.second;
+        minH.pop();
+        // Now go to list's 2nd elem and push it to minH so that we can get the minimum value
+        if (p.second->next)
+            minH.push({p.second->next->data, p.second->next});
+        temp = temp->next;
     }
     return dummy->next;
 }
+
+/*
+34.
+ANS :
+Input :  || Output :
+*/
+// Bruteforce ----------->
+// TC :
+// SC:
 // Better ----------->
 // TC :
 // SC :
+// Optimal ---------->
+// TC :
+// SC :
+
+/*
+35.
+ANS :
+Input :  || Output :
+*/
+// Bruteforce ----------->
+// TC :
+// SC:
+// Better ----------->
+// TC :
+// SC :
+// Optimal ---------->
+// TC :
+// SC :
+
+/*
+36.
+ANS :
+Input :  || Output :
+*/
+// Bruteforce ----------->
+// TC :
+// SC:
+// Better ----------->
+// TC :
+// SC :
+// Optimal ---------->
+// TC :
+// SC :
+
+// Extra from leetcode===================================>>
+
+/*
+1. Merge two sorted lists
+ANS : You are given the heads of two sorted linked lists list1 and list2.
+Merge the two lists into one sorted list. The list should be made by splicing together the nodes of the first two lists.
+Return the head of the merged linked list.
+Input : list1 = [1,2,4], list2 = [1,3,4]  || Output : [1,1,2,3,4,4]
+*/
+// Bruteforce ----------->
+// TC : O(n1)=temp1 while loop, O(n2)=temp2 while loop, N=n1=n2, sort=O(NlogN), O(N)=convert Total=  O(n1)+O(n2)+O(NlogN)+O(N)
+// SC : O(N)+O(N)
+Node *mergeTwoListsBruteforce(Node *list1, Node *list2)
+{
+    Node *temp1 = list1;
+    Node *temp2 = list2;
+    vector<int> arr;
+    while (temp1 != NULL)
+    {
+        arr.push_back(temp1->data);
+        temp1 = temp1->next;
+    }
+    while (temp2 != NULL)
+    {
+        arr.push_back(temp2->data);
+        temp2 = temp2->next;
+    }
+    sort(arr.begin(), arr.end());
+    // Convert arr to linked list which return head
+    Node *head = constructLLOptimal(arr);
+    return head;
+}
+// Better ----------->
+// TC : O(N+M)
+// SC : O(1)
+Node *mergeTwoListsBetter(Node *list1, Node *list2)
+{
+    // if (list1 == NULL)
+    //     return list2;
+    // if (list2 == NULL)
+    //     return list1;
+    // Node *left = list1;
+    // Node *right = list2;
+    // Node *dummy = new Node(0);
+    // Node *curr = dummy;
+    // while (left && right)
+    // {
+    //     if (left->data <= right->data)
+    //     {
+    //         curr->next = left;
+    //         left = left->next;
+    //     }
+    //     else
+    //     {
+    //         curr->next = right;
+    //         right = right->next;
+    //     }
+    //     curr = curr->next;
+    // }
+    // while (left)
+    // {
+    //     curr->next = left;
+    //     curr = curr->next;
+    //     left = left->next;
+    // }
+    // while (right)
+    // {
+    //     curr->next = right;
+    //     curr = curr->next;
+    //     right = right->next;
+    // }
+    // return dummy->next;
+    // ***************better optimized****************
+    Node *t1 = list1;
+    Node *t2 = list2;
+    Node *dummy = new Node(0);
+    Node *temp = dummy;
+    while (t1 != NULL && t2 != NULL)
+    {
+        if (t1->data < t2->data)
+        {
+            temp->next = t1;
+            temp = t1;
+            t1 = t1->next;
+        }
+        else
+        {
+            temp->next = t2;
+            temp = t2;
+            t2 = t2->next;
+        }
+    }
+    if (t1)
+        temp->next = t1;
+    else
+        temp->next = t2;
+    return dummy->next;
+}
 // Optimal ---------->
 // TC :O(N+M)
 // SC :O(1)
@@ -2370,11 +2591,13 @@ int main()
     /*Calculating time and space end----->>*/
 
     // Example vector of integers
-    // vector<int> arr = {9, 9, 9};
+    vector<int> arr = {3, 4, 5};
+    vector<int> arr2 = {1, 2, 6};
 
     // Call the constructLL function
     // Node *head = constructLLBruteforce(arr);
     // Node *head = constructLLOptimal(arr);
+    // Node *head1 = constructLLOptimal(arr2);
     // Node *head = nullptr;
     // ListNode<int> *head = nullptr;
     // head = insertAtFirst(head, 1);
@@ -2396,16 +2619,16 @@ int main()
     // Node* head=constructDLL(arr);
     // Node *head = constructDLLOptimal(arr);
     // printLinkedList(head, 2);
-    // Node *head = NULL;
-    // head = insertAtTailDLL(head, 3);
+    Node *head = NULL;
+    head = insertAtTailDLL(head, 3);
+    head = insertAtTailDLL(head, 1);
     // head = insertAtTailDLL(head, 1);
+    head = insertAtTailDLL(head, 2);
+    head = insertAtTailDLL(head, 4);
     // head = insertAtTailDLL(head, 1);
+    head = insertAtTailDLL(head, 10);
     // head = insertAtTailDLL(head, 2);
-    // head = insertAtTailDLL(head, 4);
-    // head = insertAtTailDLL(head, 1);
-    // head = insertAtTailDLL(head, 10);
-    // head = insertAtTailDLL(head, 2);
-    // head = insertAtTailDLL(head, 6);
+    head = insertAtTailDLL(head, 6);
     // head = insertAtTailDLL(head, 3);
     // head = insertAtTailDLL(head, 4);
     // cout << "After Insert" << endl;
@@ -2468,11 +2691,14 @@ int main()
     // head = removeKthNodeOptimal(head, 7);
     // head = deleteMiddleBruteforce(head);
     // head = deleteMiddleOptimal(head);
-    // head = sortListOptimal(head);
+    head = sortListBruteforce(head);
+    printLinkedList(head, 1);
+    cout << endl;
+    Node *headd = sortListOptimal(head);
+    printLinkedList(headd, 1);
     // head = sortList012Bruteforce(head);
     // head = sortList012Optimal(head);
     // cout << "After modified" << endl;
-    // printLinkedList(head, 1);
     // Node *head = NULL;
     // head = insertAtTailDLL(head, 1);
     // head = insertAtTailDLL(head, 3);
@@ -2501,20 +2727,20 @@ int main()
     // cout<<"After Insert "<<endl;
     // printLinkedList(head,1);
     // add 2 numbers
-    Node *head1 = NULL;
+    // Node *head1 = NULL;
     // head1 = insertAtTailDLL(head1, 10);
-    head1 = insertAtTailDLL(head1, 3);
+    // head1 = insertAtTailDLL(head1, 3);
     // head1 = insertAtTailDLL(head1, 10);
     // head1 = insertAtTailDLL(head1, 8);
-    head1 = insertAtTailDLL(head1, 5);
-    head1 = insertAtTailDLL(head1, 10);
+    // head1 = insertAtTailDLL(head1, 5);
+    // head1 = insertAtTailDLL(head1, 10);
     // // cout<<"Head1"<<endl;
     // printLinkedList(head1, 2);
     // cout << endl;
     // cout<<"Head2"<<endl;
-    Node *head2 = NULL;
-    head2 = insertAtTailDLL(head2, 4);
-    head2 = insertAtTailDLL(head2, 8);
+    // Node *head2 = NULL;
+    // head2 = insertAtTailDLL(head2, 4);
+    // head2 = insertAtTailDLL(head2, 8);
     // cout << "After add 1" << endl;
     // head = add1ToLinkedListBruteforce(head);
     // head = add1ToLinkedListOptimal(head);
@@ -2527,10 +2753,32 @@ int main()
     // head1 = deleteAllOccurrencesOptimal(head1, 10);
     // printLinkedList(head1, 2);
     // Extra from leetcode---------->>
-    // Node *head = mergeTwoListsBruteforce(head1, head2);
-    Node *head = mergeTwoListsOptimal(head1, head2);
+    // Node *head3 = mergeTwoListsBruteforce(head, head1);
+    // Node *head = mergeTwoListsBetter(head1, head2);
+    // Node *head = mergeTwoListsOptimal(head1, head2);
+    // vector<Node *> lists;
+    // First linked list: 1 -> 4 -> 5
+    // Node *list1 = new Node(1);
+    // list1->next = new Node(4);
+    // list1->next->next = new Node(5);
+    // lists.push_back(list1);
 
-    printLinkedList(head, 1);
+    // Second linked list: 1 -> 3 -> 4
+    // Node *list2 = new Node(1);
+    // list2->next = new Node(3);
+    // list2->next->next = new Node(4);
+    // lists.push_back(list2);
+
+    // Third linked list: 2 -> 6
+    // Node *list3 = new Node(2);
+    // list3->next = new Node(6);
+    // lists.push_back(list3);
+    // Node *head = mergeKListsBruteforce(lists);
+    // cout << endl;
+    // Node *head2 = mergeKListsBetter(lists);
+    // Node *head2 = mergeKListsOptimal(lists);
+    // printLinkedList(head, 1);
+    // printLinkedList(head2, 1);
 
     // End code here-------->>
     /*Calculating time and space start----->>*/

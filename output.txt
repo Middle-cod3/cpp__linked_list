@@ -1,3 +1,5 @@
-3 -> 4 -> 5 -> 8 -> 10 -> NULL
-Time taken by function: 64 microseconds
+1 -> 2 -> 3 -> 4 -> 6 -> 10 -> NULL
+
+1 -> 2 -> 3 -> 4 -> 6 -> 10 -> NULL
+Time taken by function: 145 microseconds
 Space used by function: 0 bytes
