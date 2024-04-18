@@ -52,7 +52,10 @@ public:
     }
     // Node(T value, Node *nextNode = nullptr) : data(value), next(nextNode) {}
 };
-
+auto compare = [](const Node *a, const Node *b)
+{
+    return a->data > b->data;
+};
 /* ===========================THEORY===========================>>
 1. Where to use Linked List?
 -> In stack/queue,browsers,gallery.....
@@ -2327,10 +2330,10 @@ Node *copyRandomListOptimal(Node *head)
         itr = fast;
     }
     return dummy->next;
-    //You can breakdown 3 steps into
-    // insertCopyInBetween(head);
-    // connectRandomPointers(head);
-    // return getDeepCopyList(head);
+    // You can breakdown 3 steps into
+    //  insertCopyInBetween(head);
+    //  connectRandomPointers(head);
+    //  return getDeepCopyList(head);
 }
 
 /*
@@ -2592,12 +2595,12 @@ int main()
 
     // Example vector of integers
     vector<int> arr = {3, 4, 5};
-    vector<int> arr2 = {1, 2, 6};
+    vector<int> arr2 = {1, 2, 3, 4, 5};
 
     // Call the constructLL function
     // Node *head = constructLLBruteforce(arr);
     // Node *head = constructLLOptimal(arr);
-    // Node *head1 = constructLLOptimal(arr2);
+    Node *head1 = constructLLOptimal(arr2);
     // Node *head = nullptr;
     // ListNode<int> *head = nullptr;
     // head = insertAtFirst(head, 1);
@@ -2606,6 +2609,9 @@ int main()
     // head = insertAtFirst(head, 4);
     // head = insertAtFirst(head, 5);
     // cout << "LinkedList before inserting 0 at beginning : " << endl;
+    printLinkedList(head1, 1);
+    // cout<<endl;
+    // Node * head=removeNthFromEnd(head1,2);
     // printLinkedList(head, 1);
     // head = insertAtFirst(head, 0);
     // cout << "LinkedList after inserting 0 at beginning : " << endl;
@@ -2619,16 +2625,16 @@ int main()
     // Node* head=constructDLL(arr);
     // Node *head = constructDLLOptimal(arr);
     // printLinkedList(head, 2);
-    Node *head = NULL;
-    head = insertAtTailDLL(head, 3);
-    head = insertAtTailDLL(head, 1);
+    // Node *head = NULL;
+    // head = insertAtTailDLL(head, 3);
     // head = insertAtTailDLL(head, 1);
-    head = insertAtTailDLL(head, 2);
-    head = insertAtTailDLL(head, 4);
     // head = insertAtTailDLL(head, 1);
-    head = insertAtTailDLL(head, 10);
     // head = insertAtTailDLL(head, 2);
-    head = insertAtTailDLL(head, 6);
+    // head = insertAtTailDLL(head, 4);
+    // head = insertAtTailDLL(head, 1);
+    // head = insertAtTailDLL(head, 10);
+    // head = insertAtTailDLL(head, 2);
+    // head = insertAtTailDLL(head, 6);
     // head = insertAtTailDLL(head, 3);
     // head = insertAtTailDLL(head, 4);
     // cout << "After Insert" << endl;
@@ -2691,11 +2697,11 @@ int main()
     // head = removeKthNodeOptimal(head, 7);
     // head = deleteMiddleBruteforce(head);
     // head = deleteMiddleOptimal(head);
-    head = sortListBruteforce(head);
-    printLinkedList(head, 1);
-    cout << endl;
-    Node *headd = sortListOptimal(head);
-    printLinkedList(headd, 1);
+    // head = sortListBruteforce(head);
+    // printLinkedList(head, 1);
+    // cout << endl;
+    // Node *headd = sortListOptimal(head);
+    // printLinkedList(headd, 1);
     // head = sortList012Bruteforce(head);
     // head = sortList012Optimal(head);
     // cout << "After modified" << endl;
