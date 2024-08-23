@@ -1919,6 +1919,47 @@ Node *deleteAllOccurrencesOptimal(Node *head, int k)
     }
     return head;
 }
+void deleteAllOccurOfX(struct Node **head_ref, int x)
+{
+    struct Node *temp = *head_ref;
+
+    while (temp)
+    {
+        if (temp->data == x)
+        {
+            if (temp == *head_ref)
+            {
+                *head_ref = temp->next;
+                if (*head_ref)
+                {
+                    (*head_ref)->prev = NULL;
+                }
+                free(temp);
+                temp = *head_ref;
+            }
+            else
+            {
+                struct Node *nextNode = temp->next;
+                struct Node *prevNode = temp->prev;
+
+                if (nextNode)
+                {
+                    nextNode->prev = prevNode;
+                }
+                if (prevNode)
+                {
+                    prevNode->next = nextNode;
+                }
+                free(temp);
+                temp = nextNode;
+            }
+        }
+        else
+        {
+            temp = temp->next;
+        }
+    }
+}
 /*
 26. Find pairs with given sum in doubly linked list
 ANS : you are given a sorted double linked list of size N.
@@ -2004,6 +2045,10 @@ Input :  1<->2<->2<->2<->3  || Output :1<->2<->3
 // Optimal ---------->
 // TC :O(n)
 // SC :O(1)
+/*
+Intuition : Loop the linked list using temp and then inner loop check which is NextNode=temp->next this
+nextNode && nextNode->data==temp->data then seperate the node and free() it then again attach temp->next=nextNode if nextNode is present then attch it to prev then go for next temp elem
+*/
 Node *removeDuplicatesOptimal(Node *head)
 {
     Node *temp = head;
@@ -2577,6 +2622,8 @@ Node *mergeTwoListsOptimal(Node *list1, Node *list2)
 }
 
 // ================================MAIN START=================================>>
+
+// ================================MAIN START=================================>>
 int main()
 {
     // #ifndef ONLINE_JUDGE
@@ -2594,13 +2641,14 @@ int main()
     /*Calculating time and space end----->>*/
 
     // Example vector of integers
-    vector<int> arr = {3, 4, 5};
-    vector<int> arr2 = {1, 2, 3, 4, 5};
+    // vector<int> arr = {3, 4, 5};
+    vector<int> arr2 = {1, 2, 2, 1};
+    Node *head = constructDLLOptimal(arr2);
 
     // Call the constructLL function
     // Node *head = constructLLBruteforce(arr);
     // Node *head = constructLLOptimal(arr);
-    Node *head1 = constructLLOptimal(arr2);
+    // Node *head1 = constructLLOptimal(arr2);
     // Node *head = nullptr;
     // ListNode<int> *head = nullptr;
     // head = insertAtFirst(head, 1);
@@ -2609,7 +2657,7 @@ int main()
     // head = insertAtFirst(head, 4);
     // head = insertAtFirst(head, 5);
     // cout << "LinkedList before inserting 0 at beginning : " << endl;
-    printLinkedList(head1, 1);
+    // printLinkedList(head1, 1);
     // cout<<endl;
     // Node * head=removeNthFromEnd(head1,2);
     // printLinkedList(head, 1);
